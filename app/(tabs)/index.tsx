@@ -1,15 +1,77 @@
-import { Image, StyleSheet, Platform, View } from 'react-native';
-
+import { Image, StyleSheet, View, Pressable, SafeAreaView, Modal, ActivityIndicator, useColorScheme } from 'react-native';
+import { WebView } from 'react-native-webview';
 import { HelloWave } from '@/components/HelloWave';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import { Collapsible } from '@/components/Collapsible';
 import { ExternalLink } from '@/components/ExternalLink';
+import { Ionicons } from '@expo/vector-icons';
+import { Colors } from 'react-native/Libraries/NewAppScreen';
 
 export default function HomeScreen() {
-  return (
+  const [tapCount, setTapCount] = useState(0);
+  const [showWebView, setShowWebView] = useState(false);
+  const colorScheme = useColorScheme();
+
+  const handleTitlePress = useCallback(() => {
+    setTapCount(prev => {
+      if (prev + 1 >= 6) {
+        setShowWebView(true);
+        return 0;
+      }
+      return prev + 1;
+    });
+  }, []);
+
+  if (showWebView) {
+    return (
+      <SafeAreaView style={{ flex: 1 }}>
+        {/* Close button */}
+        <Pressable
+          onPress={() => setShowWebView(false)}
+          style={styles.closeButton}
+        >
+          <Ionicons name="close" size={24} color="white" />
+          <ThemedText>
+            Webview schließen
+          </ThemedText>
+        </Pressable>
+        <WebView
+          source={{ uri: 'https://leben-de-dashbaord.onrender.com/' }}
+          style={styles.webView}
+          renderLoading={() => <View style={styles.middleScreenContainer}>
+            <ActivityIndicator size="large" color={Colors[colorScheme ?? 'light'].tint} />
+          </View>}
+        />
+      </SafeAreaView>
+    );
+  }
+
+  return (<>
+
+    <Modal
+      animationType="slide"
+      visible={showWebView}
+      onRequestClose={() => setShowWebView(false)}
+    >
+      <SafeAreaView style={{ flex: 1 }}>
+        <View style={styles.modalHeader}>
+          <Pressable
+            onPress={() => setShowWebView(false)}
+            style={styles.closeButton}
+          >
+            <Ionicons name="close" size={24} color="black" />
+          </Pressable>
+        </View>
+        <WebView
+          source={{ uri: 'https://leben-de-dashbaord.onrender.com/' }}
+          style={{ flex: 1 }}
+        />
+      </SafeAreaView>
+    </Modal>
+
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
       headerImage={
@@ -18,10 +80,12 @@ export default function HomeScreen() {
           style={styles.reactLogo}
         />
       }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Einbürgerungstest</ThemedText>
-        <HelloWave />
-      </ThemedView>
+      <Pressable onPress={handleTitlePress}>
+        <ThemedView style={styles.titleContainer}>
+          <ThemedText type="title">Einbürgerungstest</ThemedText>
+          <HelloWave />
+        </ThemedView>
+      </Pressable>
       <ThemedText>Diese App hilft dir, die Anforderungen für den Einbürgerungstest zu verstehen und zu überprüfen.
       </ThemedText>
       <View style={{ height: 16 }} />
@@ -70,6 +134,7 @@ export default function HomeScreen() {
         </ExternalLink>
       </Collapsible>
     </ParallaxScrollView>
+  </>
   );
 }
 
@@ -78,6 +143,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
+
   },
   stepContainer: {
     gap: 8,
@@ -95,5 +161,39 @@ const styles = StyleSheet.create({
   },
   collapsibleTextLink: {
     fontSize: 13,
+  },
+  modalHeader: {
+    height: 50,
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    paddingHorizontal: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+  },
+  closeButton: {
+    padding: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  middleScreenContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    color: 'black'
+  },
+  webView: {
+    flex: 1,
+    padding: 16,
+    backgroundColor: 'white',
+    marginBottom: 12,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    borderBottomLeftRadius: 14,
+    borderBottomRightRadius: 14,
+    borderWidth: 2,
+    borderColor: '#eee',
+
   },
 });

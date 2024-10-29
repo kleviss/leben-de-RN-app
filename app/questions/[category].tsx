@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, FlatList, TouchableOpacity, useColorScheme } from 'react-native';
 import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { Colors } from '@/constants/Colors';
-import { ActivityIndicator } from 'react-native-paper';
+import { Spinner } from 'react-native-ios-kit';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -42,8 +42,12 @@ export default function QuestionsScreen() {
     }
   };
 
+  const colorScheme = useColorScheme();
+  const baseColor = Colors[colorScheme ?? 'light'].background;
+  const backgroundColor = baseColor === '#ffffff' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.2)';
+
   const renderQuestion = ({ item }: { item: Question }) => (
-    <View style={styles.questionCard}>
+    <View style={[styles.questionCard, { backgroundColor }]}>
       <ThemedText style={styles.questionText}>{item.question}</ThemedText>
       {item.options.map((option, index) => (
         <TouchableOpacity
@@ -54,7 +58,7 @@ export default function QuestionsScreen() {
           ]}
         >
           {/* icon on the right side of the option */}
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
             <ThemedText style={styles.optionText}>{option}</ThemedText>
             <Ionicons name={
               option === item.answer ? 'checkmark' : 'close'
@@ -68,7 +72,23 @@ export default function QuestionsScreen() {
   if (loading) {
     return (
       <ThemedView style={styles.container}>
-        <ActivityIndicator animating={true} color={Colors.light.tint} />
+        <Stack.Screen
+          options={{
+            title: `${decodeURIComponent(category as string)}`,
+            headerBackTitle: "Zurück",
+          }}
+        />
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <Spinner animating={true} primaryColor={Colors.light.tabIconDefault} />
+        </View>
+      </ThemedView>
+    );
+  }
+
+  if (!loading && questions.length === 0) {
+    return (
+      <ThemedView style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ThemedText>Keine Fragen gefunden</ThemedText>
       </ThemedView>
     );
   }
@@ -77,7 +97,7 @@ export default function QuestionsScreen() {
     <ThemedView style={styles.container}>
       <Stack.Screen
         options={{
-          title: `Fragen für ${decodeURIComponent(category as string)}`,
+          title: `${decodeURIComponent(category as string)}`,
           headerBackTitle: "Zurück",
         }}
       />
@@ -98,7 +118,7 @@ const styles = StyleSheet.create({
   },
   questionCard: {
     backgroundColor: 'black',
-    borderRadius: 8,
+    borderRadius: 20,
     padding: 16,
     marginBottom: 16,
     shadowColor: '#000',
@@ -125,5 +145,6 @@ const styles = StyleSheet.create({
   optionText: {
     color: 'white',
     fontSize: 16,
+    maxWidth: '90%',
   },
 });

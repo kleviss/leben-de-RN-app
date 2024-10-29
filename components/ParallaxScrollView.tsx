@@ -65,8 +65,8 @@ export default function ParallaxScrollView({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    borderBottomLeftRadius: 50,
-    borderBottomRightRadius: 50,
+    borderBottomLeftRadius: 25,
+    borderBottomRightRadius: 25,
     marginBottom: 20,
     borderCurve: 'circular',
     borderWidth: 1,
@@ -76,7 +76,7 @@ const styles = StyleSheet.create({
   header: {
     height: 350,
     overflow: 'hidden',
-    backgroundColor: 'green',
+    // backgroundColor: 'green',
     marginBottom: -45
   },
   content: {
@@ -85,14 +85,14 @@ const styles = StyleSheet.create({
     padding: 24,
     gap: 16,
     overflow: 'hidden',
-    borderTopLeftRadius: 50,
-    borderTopRightRadius: 50,
-    borderBottomLeftRadius: 50,
-    borderBottomRightRadius: 50,
+    borderTopLeftRadius: 25,
+    borderTopRightRadius: 25,
+    borderBottomLeftRadius: 25,
+    borderBottomRightRadius: 25,
   },
   scrollViewContent: {
     flexGrow: 1,
-    borderBottomLeftRadius: 50,
-    borderBottomRightRadius: 50,
+    borderBottomLeftRadius: 25,
+    borderBottomRightRadius: 25,
   },
 });
