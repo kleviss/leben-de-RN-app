@@ -48,12 +48,12 @@ export default function QuestionsScreen() {
             <QuestionCard
               item={item}
               colorScheme={colorScheme}
-              style={dynamicStyles.questionCard as ViewStyle}
+            // style={dynamicStyles.questionCard as ViewStyle}
             />
           )}
           keyExtractor={(item) => item._id}
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={dynamicStyles.listContent as ViewStyle}
+        // contentContainerStyle={dynamicStyles.listContent as ViewStyle}
         />
       )}
     </ThemedView>
