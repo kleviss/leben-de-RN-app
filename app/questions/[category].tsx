@@ -1,150 +1,88 @@
-import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, FlatList, TouchableOpacity, useColorScheme } from 'react-native';
-import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
+import { FlatList, View, ViewStyle, useColorScheme } from 'react-native';
+import { Stack, useLocalSearchParams } from 'expo-router';
+
+import { Dimensions } from 'react-native';
+import { ErrorView } from '@/components/Katalog/ErrorView';
+import { LoadingView } from '@/components/Katalog/LoadingView';
+import { QuestionCard } from '@/components/QuestionCard';
+import React from 'react';
+import { StyleSheet } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { Colors } from '@/constants/Colors';
-import { Spinner } from 'react-native-ios-kit';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
+import { createStyles } from '@/styles/questions.styles';
+import { useQuestions } from '@/hooks/useQuestions';
 
-interface Question {
-  _id: string;
-  category: string;
-  question: string;
-  options: string[];
-  answer: string;
-  difficulty: string;
-}
+const SCREEN_WIDTH = Dimensions.get('window').width;
 
 export default function QuestionsScreen() {
   const { category } = useLocalSearchParams();
-  const router = useRouter();
-  const [questions, setQuestions] = useState<Question[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetchQuestions();
-  }, []);
-
-  const fetchQuestions = async () => {
-    try {
-      const response = await fetch('https://leben-de-backend.onrender.com/questions');
-      const data = await response.json();
-      const filteredQuestions = category === 'Gesamtfragenkatalog'
-        ? data
-        : data.filter((q: Question) => q.category === category);
-      setQuestions(filteredQuestions);
-    } catch (error) {
-      console.error('Error fetching questions:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const colorScheme = useColorScheme();
-  const baseColor = Colors[colorScheme ?? 'light'].background;
-  const backgroundColor = baseColor === '#ffffff' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.2)';
+  const { questions, isLoading, hasRequestFailed, fetchQuestions } = useQuestions(category as string);
 
-  const renderQuestion = ({ item }: { item: Question }) => (
-    <View style={[styles.questionCard, { backgroundColor }]}>
-      <ThemedText style={styles.questionText}>{item.question}</ThemedText>
-      {item.options.map((option, index) => (
-        <TouchableOpacity
-          key={index}
-          style={[
-            styles.optionButton,
-            option === item.answer && styles.correctOption
-          ]}
-        >
-          {/* icon on the right side of the option */}
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-            <ThemedText style={styles.optionText}>{option}</ThemedText>
-            <Ionicons name={
-              option === item.answer ? 'checkmark' : 'close'
-            } size={24} color="white" />
-          </View>
-        </TouchableOpacity>
-      ))}
-    </View>
-  );
+  const dynamicStyles = createStyles(colorScheme);
 
-  if (loading) {
-    return (
-      <ThemedView style={styles.container}>
-        <Stack.Screen
-          options={{
-            title: `${decodeURIComponent(category as string)}`,
-            headerBackTitle: "Zurück",
-          }}
-        />
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          <Spinner animating={true} primaryColor={Colors.light.tabIconDefault} />
-        </View>
-      </ThemedView>
-    );
-  }
-
-  if (!loading && questions.length === 0) {
-    return (
-      <ThemedView style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ThemedText>Keine Fragen gefunden</ThemedText>
-      </ThemedView>
-    );
-  }
+  console.log('category', category);
+  console.log('questions', questions);
 
   return (
-    <ThemedView style={styles.container}>
+    <ThemedView style={dynamicStyles.container}>
       <Stack.Screen
         options={{
-          title: `${decodeURIComponent(category as string)}`,
+          title: `${decodeURIComponent(category as string).toLocaleUpperCase().replace(/_/g, ' ')}`,
           headerBackTitle: "Zurück",
         }}
       />
-      <FlatList
-        data={questions}
-        renderItem={renderQuestion}
-        keyExtractor={(item) => item._id}
-      />
+
+      {isLoading ? (
+        <LoadingView />
+      ) : hasRequestFailed ? (
+        <ErrorView onRetry={fetchQuestions} text="Something went wrong while loading the questions." />
+      ) : questions.length === 0 ? (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <ThemedText>Keine Fragen gefunden</ThemedText>
+        </View>
+      ) : (
+        <FlatList
+          data={questions}
+          renderItem={({ item }) => (
+            <QuestionCard
+              item={item}
+              colorScheme={colorScheme}
+              style={dynamicStyles.questionCard as ViewStyle}
+            />
+          )}
+          keyExtractor={(item) => item._id}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={dynamicStyles.listContent as ViewStyle}
+        />
+      )}
     </ThemedView>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
-    backgroundColor: Colors.dark.background,
-  },
-  questionCard: {
-    backgroundColor: 'black',
-    borderRadius: 20,
-    padding: 16,
-    marginBottom: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  questionText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 12,
-  },
-  optionButton: {
-    backgroundColor: Colors.light.tint,
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 8,
-  },
-  correctOption: {
-    backgroundColor: '#4CAF50',
-    fontWeight: 'bold',
-  },
-  optionText: {
-    color: 'white',
-    fontSize: 16,
-    maxWidth: '90%',
-  },
-});
+// Update styles
+export const getModalStyles = (colorScheme: string | null | undefined) =>
+  StyleSheet.create({
+    card: {
+      marginVertical: 8,
+      marginHorizontal: 16,
+      borderWidth: 1,
+      borderColor: '#2a2b3e',
+      width: SCREEN_WIDTH * 0.925,
+      padding: 20,
+      borderRadius: 16,
+      backgroundColor: 'rgba(0, 0, 0, 0.2)',
+      shadowColor: "#000",
+      shadowOffset: {
+        width: 0,
+        height: 2,
+      },
+      shadowOpacity: 0.25,
+      shadowRadius: 3.84,
+      elevation: 5,
+      alignSelf: 'center',
+    },
+    listContent: {
+      paddingVertical: 8,
+    },
+  });

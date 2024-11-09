@@ -1,8 +1,8 @@
 import { Colors } from '@/constants/Colors';
 import { StyleSheet } from 'react-native';
 
-export const createStyles = (colorScheme: string | null | undefined) =>
-  StyleSheet.create({
+export const createStyles = (colorScheme: string | null | undefined) => {
+  return StyleSheet.create({
     wrapper: {
       borderRadius: 12,
       marginTop: 16,
@@ -28,13 +28,13 @@ export const createStyles = (colorScheme: string | null | undefined) =>
     },
     cardImage: {
       width: '100%',
-      height: 150,
+      height: 280,
       borderRadius: 8,
       marginTop: 12,
     },
     cardImagePlaceholder: {
       width: '100%',
-      height: 150,
+      height: 280,
       borderRadius: 8,
       marginTop: 12,
       backgroundColor: Colors[colorScheme ?? 'light'].border,
@@ -46,7 +46,11 @@ export const createStyles = (colorScheme: string | null | undefined) =>
     },
     content: {
       flex: 1,
-      paddingHorizontal: 16,
+      padding: 16,
+      borderRadius: 40,
+      marginBottom: 20,
+      borderTopLeftRadius: 20,
+      borderTopRightRadius: 20,
     },
     listContent: {
       paddingBottom: 16,
@@ -68,6 +72,7 @@ export const createStyles = (colorScheme: string | null | undefined) =>
       fontSize: 16,
     },
   });
+};
 
 export const getModalStyles = (colorScheme: string | null | undefined) =>
   StyleSheet.create({

@@ -9,8 +9,11 @@ import { KatalogHeader } from '@/components/Katalog/KatalogHeader';
 import { LoadingView } from '@/components/Katalog/LoadingView';
 import { ThemedView } from '@/components/ThemedView';
 import { createStyles } from '@/styles/katalog.styles';
+import { memo } from 'react';
 import { useCategories } from '@/hooks/useCategories';
 import { useRouter } from 'expo-router';
+
+const MemoizedCategoryCard = memo(CategoryCard);
 
 export default function KatalogScreen() {
   const { categories, isLoading, hasRequestFailed, fetchCategories } = useCategories();
@@ -32,6 +35,15 @@ export default function KatalogScreen() {
     });
   }, [router]);
 
+  const getItemLayout = useCallback(
+    (data: any, index: number) => ({
+      length: 100, // Replace with your actual item height
+      offset: 100 * index,
+      index,
+    }),
+    []
+  );
+
   return (
     <SafeAreaView style={styles.container}>
       <KatalogHeader
@@ -47,8 +59,9 @@ export default function KatalogScreen() {
           <FlatList
             data={categories}
             renderItem={({ item }) => (
-              <CategoryCard
-                item={item}
+              <MemoizedCategoryCard
+                // item={item}
+                item={{ ...item, _id: item._id === 'gesamtfragenkatalog' ? 'allgemein' : item.name }}
                 onPress={handleCardPress}
                 colorScheme={colorScheme}
                 isLoading={isLoading}
@@ -57,6 +70,10 @@ export default function KatalogScreen() {
             keyExtractor={(item) => item._id}
             contentContainerStyle={styles.listContent}
             showsVerticalScrollIndicator={false}
+            getItemLayout={getItemLayout}
+            removeClippedSubviews={true}
+            maxToRenderPerBatch={10}
+            windowSize={5}
           />
         </ThemedView>
       )}

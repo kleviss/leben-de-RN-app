@@ -17,7 +17,7 @@ export const CategoryCard: React.FC<CategoryCardProps> = ({
   const styles = createStyles(colorScheme);
   const baseColor = Colors[colorScheme ?? 'light'].background;
   const backgroundColor = baseColor === '#ffffff' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.2)';
-
+  console.log('item', item);
   return (
     <TouchableOpacity onPress={() => onPress(item._id)}>
       <View style={[styles.wrapper, { backgroundColor }]}>
@@ -48,7 +48,7 @@ export const CategoryCard: React.FC<CategoryCardProps> = ({
           )}
         </View>
       </View>
-      <Divider style={{ marginBottom: 24, marginTop: 12, marginHorizontal: 16 }} />
+      <Divider style={{ marginBottom: 0, marginTop: 16, marginHorizontal: 16 }} />
     </TouchableOpacity>
   );
 };

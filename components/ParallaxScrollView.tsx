@@ -1,11 +1,11 @@
-import type { PropsWithChildren, ReactElement } from 'react';
-import { StyleSheet, useColorScheme } from 'react-native';
 import Animated, {
   interpolate,
   useAnimatedRef,
   useAnimatedStyle,
   useScrollViewOffset,
 } from 'react-native-reanimated';
+import type { PropsWithChildren, ReactElement } from 'react';
+import { StyleSheet, useColorScheme } from 'react-native';
 
 import { ThemedView } from '@/components/ThemedView';
 
@@ -65,13 +65,17 @@ export default function ParallaxScrollView({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    borderBottomLeftRadius: 25,
-    borderBottomRightRadius: 25,
-    marginBottom: 20,
+    borderBottomLeftRadius: 45,
+    borderBottomRightRadius: 45,
+    borderTopLeftRadius: 45,
+    borderTopRightRadius: 45,
+    borderColor: 'white',
+    // paddingBottom: 50,
     borderCurve: 'circular',
-    borderWidth: 1,
+    // borderWidth: 1,
     overflow: 'hidden',
-    padding: 1,
+    // padding: -5,
+    // backgroundColor: 'red',
   },
   header: {
     height: 350,
@@ -89,6 +93,8 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 25,
     borderBottomLeftRadius: 25,
     borderBottomRightRadius: 25,
+    marginBottom: 60,
+
   },
   scrollViewContent: {
     flexGrow: 1,

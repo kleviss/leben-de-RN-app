@@ -1,14 +1,15 @@
-import { Image, StyleSheet, View, Pressable, SafeAreaView, Modal, ActivityIndicator, useColorScheme } from 'react-native';
-import { WebView } from 'react-native-webview';
+import { ActivityIndicator, Dimensions, Image, Modal, Pressable, SafeAreaView, StyleSheet, View, useColorScheme } from 'react-native';
+import React, { useCallback, useState } from 'react';
+
+import { Collapsible } from '@/components/Collapsible';
+import { Colors } from 'react-native/Libraries/NewAppScreen';
+import { ExternalLink } from '@/components/ExternalLink';
 import { HelloWave } from '@/components/HelloWave';
+import { Ionicons } from '@expo/vector-icons';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import React, { useState, useCallback } from 'react';
-import { Collapsible } from '@/components/Collapsible';
-import { ExternalLink } from '@/components/ExternalLink';
-import { Ionicons } from '@expo/vector-icons';
-import { Colors } from 'react-native/Libraries/NewAppScreen';
+import { WebView } from 'react-native-webview';
 
 export default function HomeScreen() {
   const [tapCount, setTapCount] = useState(0);
@@ -40,46 +41,48 @@ export default function HomeScreen() {
         </Pressable>
         <WebView
           source={{ uri: 'https://leben-de-dashbaord.onrender.com/' }}
-          style={styles.webView}
-          renderLoading={() => <View style={styles.middleScreenContainer}>
-            <ActivityIndicator size="large" color={Colors[colorScheme ?? 'light'].tint} />
-          </View>}
+          style={[styles.webView, { flex: 1 }]}
+          originWhitelist={['*']}
+          mixedContentMode="compatibility"
+          allowsInlineMediaPlayback={true}
+          javaScriptEnabled={true}
+          domStorageEnabled={true}
+          startInLoadingState={true}
+          scalesPageToFit={true}
+          // For debugging
+          onError={(syntheticEvent) => {
+            const { nativeEvent } = syntheticEvent;
+            console.warn('WebView error: ', nativeEvent);
+          }}
+          onHttpError={(syntheticEvent) => {
+            const { nativeEvent } = syntheticEvent;
+            console.warn(
+              'WebView received error status code: ',
+              nativeEvent.statusCode
+            );
+          }}
         />
       </SafeAreaView>
     );
   }
 
   return (<>
-
-    <Modal
-      animationType="slide"
-      visible={showWebView}
-      onRequestClose={() => setShowWebView(false)}
-    >
-      <SafeAreaView style={{ flex: 1 }}>
-        <View style={styles.modalHeader}>
-          <Pressable
-            onPress={() => setShowWebView(false)}
-            style={styles.closeButton}
-          >
-            <Ionicons name="close" size={24} color="black" />
-          </Pressable>
-        </View>
-        <WebView
-          source={{ uri: 'https://leben-de-dashbaord.onrender.com/' }}
-          style={{ flex: 1 }}
-        />
-      </SafeAreaView>
-    </Modal>
-
     <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
+      headerBackgroundColor={{ light: 'white', dark: '#1D3D47' }}
       headerImage={
         <Image
           source={require('@/assets/images/leben-de-app.jpg')}
-          style={styles.reactLogo}
+          style={[styles.reactLogo,
+          {
+            width: Dimensions.get('window').width,
+            height: 398,
+
+          }
+          ]}
         />
-      }>
+      }
+
+    >
       <Pressable onPress={handleTitlePress}>
         <ThemedView style={styles.titleContainer}>
           <ThemedText type="title">Einbürgerungstest</ThemedText>
@@ -150,11 +153,14 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   reactLogo: {
-    height: 478,
-    width: 490,
+    // height: 278,
+    // width: 490,
     bottom: 0,
     left: 0,
     position: 'absolute',
+    // borderTopLeftRadius: 45,
+    // borderTopRightRadius: 45,
+    // backgroundColor: 'red',
   },
   collapsibleText: {
     fontSize: 13,
@@ -186,14 +192,14 @@ const styles = StyleSheet.create({
   webView: {
     flex: 1,
     padding: 16,
-    backgroundColor: 'white',
+    // backgroundColor: 'white',
     marginBottom: 12,
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     borderBottomLeftRadius: 14,
     borderBottomRightRadius: 14,
     borderWidth: 2,
-    borderColor: '#eee',
+    // borderColor: '#eee',
 
   },
 });
