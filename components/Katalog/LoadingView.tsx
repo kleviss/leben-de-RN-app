@@ -10,7 +10,7 @@ export const LoadingView: React.FC = () => {
 
   return (
     <ThemedView style={styles.container}>
-      <ActivityIndicator size="large" color={Colors[colorScheme ?? 'light'].primary} />
+      <ActivityIndicator size={32} color={Colors[colorScheme ?? 'light'].primary} />
     </ThemedView>
   )
 };

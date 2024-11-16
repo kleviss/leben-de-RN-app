@@ -10,6 +10,7 @@ import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { WebView } from 'react-native-webview';
+import { router } from 'expo-router';
 
 export default function HomeScreen() {
   const [tapCount, setTapCount] = useState(0);
@@ -81,7 +82,25 @@ export default function HomeScreen() {
           ]}
         />
       }
-
+      headerRightComponent={
+        <Pressable
+          onPress={() => router.push('/settings')}
+          style={styles.profileButton}
+        >
+          <Ionicons
+            name="person-outline"
+            size={20}
+            style={{
+              marginTop: 6, marginRight: 6,
+              borderWidth: 1,
+              borderColor: colorScheme === 'dark' ? 'white' : 'black',
+              padding: 4,
+              borderRadius: 10,
+            }}
+            color={colorScheme === 'dark' ? 'white' : 'black'}
+          />
+        </Pressable>
+      }
     >
       <Pressable onPress={handleTitlePress}>
         <ThemedView style={styles.titleContainer}>
@@ -201,5 +220,11 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     // borderColor: '#eee',
 
+  },
+  profileButton: {
+    position: 'absolute',
+    top: 50,
+    right: 16,
+    zIndex: 1,
   },
 });

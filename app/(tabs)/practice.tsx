@@ -1,4 +1,4 @@
-import { Animated, Button, Dimensions, PanResponder, SafeAreaView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Animated, Button, Dimensions, PanResponder, Pressable, SafeAreaView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { BottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
@@ -17,6 +17,7 @@ import { useQuestions } from '@/hooks/useQuestions';
 // Add BottomSheetModalProvider
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
+const SCREEN_HEIGHT = Dimensions.get('window').height;
 const SWIPE_THRESHOLD = 0.25 * SCREEN_WIDTH;
 
 export default function PracticeScreen() {
@@ -135,12 +136,12 @@ export default function PracticeScreen() {
     setCorrectAnswers(0);
   }, []);
 
-  const renderCard = () => {
+  const renderQuestionCard = () => {
     if (!currentQuestions.length) return null;
 
     if (currentIndex >= currentQuestions.length) {
       return (
-        <View style={styles.card}>
+        <View style={[styles.card, { borderColor: Colors[colorScheme ?? 'light'].cardBorder, backgroundColor: Colors[colorScheme ?? 'light'].cardBackground }]}>
           <ThemedText style={styles.completedText}>
             Übung abgeschlossen! 🎉
           </ThemedText>
@@ -174,7 +175,9 @@ export default function PracticeScreen() {
     return (
       <ThemedView style={styles.content}>
         <Animated.View
-          style={[styles.card, getCardStyle()]}
+          style={[styles.card, getCardStyle(),
+          { borderColor: Colors[colorScheme ?? 'light'].cardBorder, backgroundColor: Colors[colorScheme ?? 'light'].cardBackground }
+          ]}
           {...panResponder.panHandlers}
         >
           <ThemedText style={styles.questionText}>
@@ -182,7 +185,7 @@ export default function PracticeScreen() {
           </ThemedText>
 
           {/* if questions has images loop through them */}
-          {question.images && (
+          {question.images && question.images.length > 1 && (
             <View style={styles.imageOptionsContainer}>
               {question.images.map((imageUrl, index) => (
                 <View key={index} style={styles.imageOption}>
@@ -198,6 +201,11 @@ export default function PracticeScreen() {
               ))}
             </View>
           )}
+          {question.images && question.images.length === 1 && (
+            <View style={styles.imageContainer}>
+              <Image source={{ uri: question.images[0] }} style={styles.image} resizeMode="cover" />
+            </View>
+          )}
 
           <View style={styles.optionsContainer}>
             {question.options.map((option, index) => (
@@ -205,7 +213,7 @@ export default function PracticeScreen() {
                 key={index}
                 style={[
                   styles.optionButton,
-                  selectedAnswer === index && styles.selectedOption,
+                  selectedAnswer === index && styles.selectedOptionLight,
                   isShowingAnswer && index === correctAnswerIndex && styles.correctOption,
                   isShowingAnswer &&
                   selectedAnswer === index &&
@@ -224,6 +232,23 @@ export default function PracticeScreen() {
                   styles.wrongOptionText,
                 ]}>
                   {option}
+                  {/* richting falsch label after user has answered */}
+                  {isShowingAnswer && selectedAnswer !== correctAnswerIndex && (
+                    <ThemedText style={[styles.wrongOptionText, {
+                      backgroundColor: '#472e2e',
+                      padding: 8,
+                      color: 'white',
+                      marginLeft: 10,
+                      borderRadius: 14,
+                    }]}>
+                      Falsch
+                    </ThemedText>
+                  )}
+                  {isShowingAnswer && selectedAnswer === correctAnswerIndex && (
+                    <ThemedText style={styles.correctOptionText}>
+                      Richtig
+                    </ThemedText>
+                  )}
                 </ThemedText>
               </TouchableOpacity>
             ))}
@@ -281,12 +306,13 @@ export default function PracticeScreen() {
       <ThemedView style={styles.container}>
 
         <View style={styles.cardContainer}>
-          {renderCard()}
+          {renderQuestionCard()}
         </View>
 
         {currentIndex !== currentQuestions.length && (
           <View style={styles.bottomControls}>
-            <Button
+            {/* <Button
+              variant="primary"
               onPress={() => {
                 if (isShowingAnswer) {
                   forceSwipe('right');
@@ -294,8 +320,33 @@ export default function PracticeScreen() {
                   setIsShowingAnswer(true);
                 }
               }}
-              title={isShowingAnswer ? 'Nächste Frage' : 'Antwort anzeigen'}
-            />
+              title={'Weiter'}
+            /> */}
+            <TouchableOpacity
+              onPress={() => {
+                if (isShowingAnswer) {
+                  forceSwipe('right');
+                } else {
+                  setIsShowingAnswer(true);
+                }
+              }}
+            >
+              <View style={{
+                padding: 16,
+                borderRadius: 12,
+                backgroundColor: selectedAnswer === null ? '#51ae7b62' : '#51ae7b',
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}>
+                <ThemedText style={{
+                  fontWeight: '600',
+                  fontSize: 16,
+                }}>Weiter
+
+                </ThemedText>
+              </View>
+            </TouchableOpacity>
           </View>
         )}
       </ThemedView>
@@ -323,7 +374,10 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
     margin: 16,
+    marginBottom: 60,
+    // marginBottom: 100,
     borderRadius: 25,
+
   },
   topBar: {
     flexDirection: 'row',
@@ -344,37 +398,47 @@ const styles = StyleSheet.create({
     flex: 1,
     width: '100%',
     position: 'relative',
+    // marginBottom: -100,
+    // backgroundColor: 'red',
+    // height: '100%',
   },
   card: {
     position: 'absolute',
-    width: SCREEN_WIDTH * 0.925,
-    height: SCREEN_WIDTH * 1.30,
+    width: SCREEN_WIDTH * 0.92,
+    // height: '90%',
+    height: SCREEN_HEIGHT * 0.6,
     alignSelf: 'center',
     padding: 20,
     borderRadius: 16,
-    backgroundColor: 'rgba(0, 0, 0, 0.2)',
+    // backgroundColor: 'rgba(0, 0, 0, 0.2)',
     borderWidth: 1,
-    borderColor: '#2a2b3e',
+    // borderColor: '#4f4f5327',
   },
   questionText: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: '600',
     textAlign: 'center',
-    marginBottom: 20,
   },
   optionsContainer: {
     flex: 1,
     justifyContent: 'center',
+
     gap: 12,
+    marginBottom: 0,
   },
   optionButton: {
     padding: 16,
     borderRadius: 12,
-    backgroundColor: '#1a1b2e',
+    // backgroundColor: '#1a1b2e',
     borderWidth: 1,
-    borderColor: '#2a2b3e',
+    borderColor: '#9b9b9b8b',
   },
-  selectedOption: {
+  selectedOptionLight: {
+    borderColor: 'transparent',
+    borderWidth: 1,
+    backgroundColor: '#9b9b9b8b',
+  },
+  selectedOptionDark: {
     borderColor: '#4a4b5e',
     backgroundColor: '#2a2b3e',
   },
@@ -383,7 +447,7 @@ const styles = StyleSheet.create({
     borderColor: '#2a573e',
   },
   optionText: {
-    fontSize: 16,
+    fontSize: 15,
     textAlign: 'center',
   },
   correctOptionText: {
@@ -392,7 +456,9 @@ const styles = StyleSheet.create({
   bottomControls: {
     width: '100%',
     padding: 16,
-    paddingBottom: 72,
+    // backgroundColor: 'blue',
+    paddingBottom: 62,
+    // borderWidth: 1,
   },
   completedText: {
     fontSize: 24,
@@ -472,5 +538,12 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginTop: 5,
     textAlign: 'center',
+  },
+  imageContainer: {
+    width: '100%',
+    height: '80%',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#2a2b3e',
   },
 });
