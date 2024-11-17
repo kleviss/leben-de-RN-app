@@ -45,17 +45,14 @@ export default function KatalogScreen() {
   );
 
   return (
-    <SafeAreaView style={styles.container}>
-      <KatalogHeader
-        onPickerPress={() => bottomSheetModalRef.current?.present()}
-      />
-
+    <SafeAreaView style={[styles.container, { backgroundColor: colorScheme === 'dark' ? '#000000' : '#ffffff' }]}>
+      <KatalogHeader onPickerPress={() => bottomSheetModalRef.current?.present()} />
       {isLoading ? (
         <LoadingView />
       ) : hasRequestFailed ? (
         <ErrorView onRetry={fetchCategories} />
       ) : (
-        <ThemedView style={styles.content}>
+        <ThemedView style={[styles.content]}>
           <FlatList
             data={categories}
             renderItem={({ item }) => (

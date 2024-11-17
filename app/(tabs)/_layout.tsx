@@ -9,9 +9,12 @@ import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { Tabs } from 'expo-router';
 import { ThemedView } from '@/components/ThemedView';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { useTheme } from '@/context/ThemeContext';
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
+  // const colorScheme = useColorScheme();
+  const { isDarkMode } = useTheme();
+  const colorScheme = isDarkMode ? 'dark' : 'light';
 
   return (
     <Tabs
@@ -20,44 +23,37 @@ export default function TabLayout() {
         headerShown: false,
         tabBarStyle: {
           position: 'absolute',
-          borderRadius: 25,
+          borderRadius: 23,
           backgroundColor: Colors[colorScheme ?? 'light'].background,
-          width: '85%',
-          height: 65,
-          bottom: 20,
-          left: '7.5%',
-          paddingHorizontal: 20,
+          bottom: 0,
           elevation: 5,
           shadowColor: '#585555',
-          // borderWidth: 1,
-          // borderColor: '#585555',
-          shadowOffset: {
-            width: 0,
-            height: 2,
-          },
+          shadowOffset: { width: 0, height: 2 },
           shadowOpacity: 0.25,
           shadowRadius: 10,
           borderTopWidth: 0, // Removes the default border
         },
         tabBarBackground: () => (
           <BlurView
-            intensity={0}
+            intensity={20}
             style={{
               ...StyleSheet.absoluteFillObject,
               borderRadius: 25,
               overflow: 'hidden',
               backgroundColor: 'transparent',
+              justifyContent: 'center',
+              alignItems: 'center',
             }}
           />
         ),
         tabBarItemStyle: {
           padding: 5,
-          height: 60,
+          height: 70,
         },
         tabBarLabelStyle: {
           fontSize: 12,
-          fontWeight: '500',
-          paddingBottom: 5,
+          fontWeight: '400',
+          // paddingBottom: 0,
         },
       }}>
       <Tabs.Screen

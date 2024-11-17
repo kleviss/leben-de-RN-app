@@ -93,11 +93,11 @@ export default function HomeScreen() {
             style={{
               marginTop: 6, marginRight: 6,
               borderWidth: 1,
-              borderColor: colorScheme === 'dark' ? 'white' : 'black',
+              borderColor: '#05040442',
               padding: 4,
               borderRadius: 10,
             }}
-            color={colorScheme === 'dark' ? 'white' : 'black'}
+            color={'#00000086'}
           />
         </Pressable>
       }

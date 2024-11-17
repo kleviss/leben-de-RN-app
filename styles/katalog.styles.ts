@@ -47,8 +47,8 @@ export const createStyles = (colorScheme: string | null | undefined) => {
     content: {
       flex: 1,
       padding: 16,
-      borderRadius: 40,
-      marginBottom: 20,
+      // borderRadius: 40,
+      // marginBottom: 20,
       borderTopLeftRadius: 20,
       borderTopRightRadius: 20,
     },

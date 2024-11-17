@@ -17,6 +17,8 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
   const systemColorScheme = useColorScheme();
   const [useSystemTheme, setUseSystemTheme] = useState(true);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  console.log('systemColorScheme', systemColorScheme);
+  console.log('isDarkMode', isDarkMode);
 
   useEffect(() => {
     loadThemeSettings();
